@@ -3,6 +3,8 @@ import Breadcrumb from '../../common/Breadcrumb'
 import axios from 'axios';
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { Pagination } from 'flowbite-react';
+import { toast } from 'react-toastify';
 
 export default function ViewCategory() {
 
@@ -39,12 +41,56 @@ export default function ViewCategory() {
     }
   }
 
-  const deleteAll = () => {
+  //for pagination
+  const [status, setStatus] = useState(1);
 
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const onPageChange = (page) => setCurrentPage(page);
+
+  //for delete the selected category
+  const deleteAll = () => {
+    if(confirm('Are you sure you want to delete ?')){
+      axios.post('http://localhost:1500/api/admin/categories/delete',{
+        id : checkBoxValue
+      })
+      .then( (success) => {
+        if(success.data.status == true){
+          setStatus(!status);
+          setCheckBoxValue([]);
+          toast.success(success.data.message);
+        } else {
+          toast.error(success.data.message);
+        }
+      }).catch( (error) => {
+          toast.error('Something went wrong !!');
+      })
+    }
+  }
+
+  //for change-status the selected category
+  const changeStatus = () => {
+      axios.post('http://localhost:1500/api/admin/categories/change-status',{
+        id : checkBoxValue
+      })
+      .then( (success) => {
+        if(success.data.status == true){
+          setStatus(!status);
+          setCheckBoxValue([]);
+          toast.success(success.data.message);
+        } else {
+          toast.error(success.data.message);
+        }
+      }).catch( (error) => {
+          toast.error('Something went wrong !!');
+      })
   }
 
   useEffect( () => {
-      axios.post('http://localhost:1500/api/admin/categories')
+      axios.post('http://localhost:1500/api/admin/categories',{
+        page : currentPage,
+        limit : 20,
+      })
       .then( (success) => {
         if(success.data.status == true){
           setCategories(success.data.data);
@@ -55,7 +101,7 @@ export default function ViewCategory() {
       }).catch( (error) => {
           toast.error('Something went wrong !!');
       })
-  },[]);
+  },[currentPage, status]);
 
   return (
     <section className="w-full">
@@ -65,14 +111,14 @@ export default function ViewCategory() {
         <div className="max-w-[1020px] mx-auto ms-[73%]">
           <button onClick={ deleteAll }
               type="button"
-              className="focus:outline-none my-10 text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-red-500 duration-[0.5s] dark:focus:ring-purple-900"
+              className="focus:outline-none my-10 text-white bg-purple-700 hover:bg-red-500 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 duration-[0.5s] dark:focus:ring-purple-900"
             >
               Delete All
           </button>
 
-          <button
+          <button onClick={ changeStatus }
               type="button"
-              className=" ms-3 focus:outline-none my-10 text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-green-500 duration-[0.5s] dark:focus:ring-purple-900"
+              className=" ms-3 focus:outline-none my-10 text-white bg-purple-700 hover:bg-green-500 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 duration-[0.5s] dark:focus:ring-purple-900"
             >
               Change Status
           </button>
@@ -157,8 +203,12 @@ export default function ViewCategory() {
                       </tbody>
                   </table>
               </div>
-
             </div>
+            
+            <div className="flex overflow-x-auto sm:justify-center">
+              <Pagination currentPage={currentPage} totalPages={100} onPageChange={onPageChange} showIcons />
+            </div>
+
           </div>
         </div>
   </section>

@@ -1,5 +1,5 @@
 const express = require('express');
-const { create, index, update, destroy, details } = require('../../Controllers/Admin/colorController');
+const { create, index, update, destroy, details, changeStatus } = require('../../Controllers/Admin/colorController');
 
 const router = express.Router();
 const path = require('path');
@@ -25,16 +25,18 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage }).none();
 
 module.exports = server =>  {
-
+ 
     router.post('/add', upload, create);
 
-    router.post('/', upload, index);
+    router.post('/', upload, index); 
 
     router.post('/details/:id', upload, details);
 
     router.put('/update/:id', upload, update);
 
-    router.delete('/delete/:id', upload, destroy);
+    router.post('/delete', upload, destroy);
+
+    router.post('/change-status', upload, changeStatus);
 
     server.use('/api/admin/colors', router);
 }

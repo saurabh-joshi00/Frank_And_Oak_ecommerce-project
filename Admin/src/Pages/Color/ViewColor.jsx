@@ -6,6 +6,7 @@ import Footer from '../../common/Footer'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { Link } from 'react-router-dom'
+import { Pagination } from 'flowbite-react'
 
 export default function ViewColor() { 
 
@@ -41,13 +42,57 @@ export default function ViewColor() {
         setCheckBoxValue([]);
         }
       }
+
+      //for pagination
+      const [status, setStatus] = useState(1);
     
+      const [currentPage, setCurrentPage] = useState(1);
+    
+      const onPageChange = (page) => setCurrentPage(page);
+    
+      //for delete the selected category
       const deleteAll = () => {
-    
+        if(confirm('Are you sure you want to delete ?')){
+          axios.post('http://localhost:1500/api/admin/colors/delete',{
+            id : checkBoxValue
+          })
+          .then( (success) => {
+            if(success.data.status == true){
+              setStatus(!status);
+              setCheckBoxValue([]);
+              toast.success(success.data.message);
+            } else {
+              toast.error(success.data.message);
+            }
+          }).catch( (error) => {
+              toast.error('Something went wrong !!');
+          })
+        }
+      }
+
+      //for change-status the selected category
+      const changeStatus = () => {
+        axios.post('http://localhost:1500/api/admin/colors/change-status',{
+          id : checkBoxValue
+        })
+        .then( (success) => {
+          if(success.data.status == true){
+            setStatus(!status);
+            setCheckBoxValue([]);
+            toast.success(success.data.message);
+          } else {
+            toast.error(success.data.message);
+          }
+        }).catch( (error) => {
+            toast.error('Something went wrong !!');
+        })
       }
 
     useEffect( () => {
-        axios.post('http://localhost:1500/api/admin/colors')
+        axios.post('http://localhost:1500/api/admin/colors',{
+          page : currentPage,
+          limit : 20
+        })
         .then( (success) => {
           if(success.data.status == true){
             setColors(success.data.data);
@@ -58,7 +103,7 @@ export default function ViewColor() {
         }).catch( (error) => {
             toast.error('Something went wrong !!');
         })
-    },[]);
+    },[currentPage, status]);
 
   return (
     <>
@@ -66,16 +111,16 @@ export default function ViewColor() {
         <div className="w-full min-h-[610px]">
 
         <div className="max-w-[1020px] mx-auto ms-[73%]">
-          <button onClick={ deleteAll }
+          <button onClick={ deleteAll } 
               type="button"
-              className="focus:outline-none my-10 text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-red-500 duration-[0.5s] dark:focus:ring-purple-900"
+              className="focus:outline-none my-10 text-white bg-purple-700 hover:bg-red-500 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 duration-[0.5s] dark:focus:ring-purple-900"
             >
               Delete All
           </button>
 
-          <button
+          <button onClick={ changeStatus } 
               type="button"
-              className=" ms-3 focus:outline-none my-10 text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-green-500 duration-[0.5s] dark:focus:ring-purple-900"
+              className=" ms-3 focus:outline-none my-10 text-white bg-purple-700 hover:bg-green-500 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 duration-[0.5s] dark:focus:ring-purple-900"
             >
               Change Status
           </button>
@@ -86,6 +131,7 @@ export default function ViewColor() {
               View Color
             </h3>
             <div className="border border-t-0 rounded-b-md border-slate-400">
+
                 <div className="relative overflow-x-auto">
                     <table className="w-full  text-left rtl:text-right text-gray-500 ">
                         <thead className="text-sm text-gray-700 uppercase bg-gray-50 ">
@@ -156,6 +202,11 @@ export default function ViewColor() {
                     </table>
                 </div>
             </div>
+
+          <div className="flex overflow-x-auto sm:justify-center">
+            <Pagination currentPage={currentPage} totalPages={100} onPageChange={onPageChange} showIcons />
+          </div>
+
           </div>
         </div>
         </>

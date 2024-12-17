@@ -4,7 +4,7 @@ const colorModel = require("../../Models/Color.js");
 exports.create = async (request, response) => {
 
     const data = new colorModel({
-        name : request.body.name,
+        name : request.body.name, 
         code : request.body.code
     })
 
@@ -173,9 +173,9 @@ exports.update = async (request, response) => {
 // Soft-Delete API through updateOne()
 exports.destroy = async (request, response) => {
 
-    await colorModel.updateOne(
+    await colorModel.updateMany(
         {
-            _id : request.params.id
+            _id : request.body.id
         },
         {
             $set : {
@@ -187,6 +187,58 @@ exports.destroy = async (request, response) => {
         var resp = {
             status : true,
             message : 'Record Deleted Successfully.',
+            data : result
+        }
+        response.send(resp);
+
+    }).catch((error) => {
+        //Index Array
+        var errormessages = [];
+
+        //for-in loop is used to get the number of the index
+        for(var value in error.errors){
+            console.log(value);
+            errormessages.push(error.errors[value].message);
+        }
+
+        const resp = {
+            status : false,
+            message : 'Something went wrong !!',
+            data : '',
+            error : errormessages
+        }
+        response.send(resp);
+    })
+
+}
+
+// Change-Status API through updateMany() for multiple change
+exports.changeStatus = async (request, response) => {
+
+    await colorModel.updateMany(
+        {
+            _id : {
+                $in : request.body.id
+            }
+        },
+        { 
+            $set: {
+                status: { 
+                    $switch: {
+                        branches: [
+                            { case: { $eq: [ "$status", 0 ] }, then: 1 },
+                            { case: { $eq: [ "$status", 1 ] }, then: 0 },
+                        ],
+                        default: 1
+                    } 
+                } 
+            } 
+        }
+    ).then((result) => {
+
+        var resp = {
+            status : true,
+            message : 'Status Updated Successfully.',
             data : result
         }
         response.send(resp);
