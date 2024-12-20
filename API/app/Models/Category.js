@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-//Schema declaration with Validation Methods
+//Schema declaration with Validation Methods same for parent and sub category
 const categorySchema = new mongoose.Schema({
     name : { 
         type : String,

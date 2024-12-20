@@ -1,5 +1,5 @@
 const express = require('express');
-const { create, index, update, destroy, details, changeStatus } = require('../../Controllers/Admin/parentCategoryController');
+const { create, index, update, destroy, details, changeStatus } = require('../../Controllers/Admin/subCategoryController');
 
 const router = express.Router();
 const path = require('path');
@@ -21,20 +21,21 @@ const storage = multer.diskStorage({
 })
   
 const upload = multer({ storage: storage }).none();
- 
+const single = multer({ storage: storage }).single('image');
+
 module.exports = server =>  { 
 
-    router.post('/add', upload, create);
+    router.post('/add', single, create);
 
-    router.post('/', upload, index);
+    router.post('/', folder.none(), index);
 
     router.post('/details/:id', upload, details);
 
-    router.put('/update/:id', upload, update);
+    router.put('/update/:id', single, update);
 
-    router.post('/delete', upload, destroy);
+    router.post('/delete', folder.none(), destroy);
     
-    router.post('/change-status', upload, changeStatus);
+    router.post('/change-status', folder.none(), changeStatus);
 
-    server.use('/api/admin/categories', router);
+    server.use('/api/admin/sub-categories', router);
 }

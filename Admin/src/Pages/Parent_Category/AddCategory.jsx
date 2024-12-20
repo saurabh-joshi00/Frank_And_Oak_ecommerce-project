@@ -8,6 +8,7 @@ export default function AddCategory() {
   
   const params = useParams();
 
+  //to get and save category-details
   const [categoryDetails, setCategoryDetails] = useState('');
 
   const formHandler = (event) => {

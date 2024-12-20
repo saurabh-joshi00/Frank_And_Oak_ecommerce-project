@@ -18,6 +18,9 @@ server.get('/', (request, response) => {
     response.send('Server is started...');
 });
 
+//default static code for image uploading
+server.use('/uploads/categories',express.static('uploads/categories'));
+
 //Calling categoryRoutes.js File
 require('./app/Routes/Admin/parentCategoryRoutes.js')(server);
 
@@ -26,6 +29,9 @@ require('./app/Routes/Admin/colorRoutes.js')(server);
 
 //Calling sizeRoutes.js File
 require('./app/Routes/Admin/sizeRoutes.js')(server);
+
+//Calling subCategoryRoutes.js File
+require('./app/Routes/Admin/subCategoryRoutes.js')(server);
 
 //for connecting to the mongodb database using mongoose framework
 mongoose.connect('mongodb://127.0.0.1:27017/FRANK_AND_OAK_DB')

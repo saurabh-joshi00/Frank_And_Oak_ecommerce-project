@@ -133,8 +133,9 @@ const route = createBrowserRouter(
           <Route path="update-category/:id" element={<AddCategory />}></Route>
         </Route>
         <Route path="sub-category">
-          <Route path="add-sub-category" element={<AddSubCategory />}></Route>
+          <Route path="add-sub-category/:id?" element={<AddSubCategory />}></Route>
           <Route path="view-sub-category" element={<ViewSubCategory />}></Route>
+          <Route path="update-sub-category/:id" element={<AddSubCategory />}></Route>
         </Route>
         <Route path="product">
           <Route path="product-details" element={<ProductDetails />}></Route>

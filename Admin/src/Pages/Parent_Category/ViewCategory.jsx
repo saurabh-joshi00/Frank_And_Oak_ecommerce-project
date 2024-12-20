@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import Breadcrumb from '../../common/Breadcrumb'
-import axios from 'axios';
+import axios, { toFormData } from 'axios';
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Pagination } from 'flowbite-react';
@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 
 export default function ViewCategory() {
 
+  
   const [categories, setCategories] = useState([]);
 
   //for select checkbox
@@ -17,7 +18,7 @@ export default function ViewCategory() {
   const singleSelectHandler = (id) => {
     if(checkBoxValue.includes(id)){
       const data = checkBoxValue.filter((v, i) => {
-        if(v != id){
+        if(v !== id){
           return v;
         }
       })
@@ -32,7 +33,7 @@ export default function ViewCategory() {
 
     if(checkBoxValue.length != categories.length){
       const data = [];
-      categories.forEach((v ) => {
+      categories.forEach((v) => {
         data.push(v._id);
       })
       setCheckBoxValue([...data]);
@@ -51,7 +52,7 @@ export default function ViewCategory() {
   //for delete the selected category
   const deleteAll = () => {
     if(confirm('Are you sure you want to delete ?')){
-      axios.post('http://localhost:1500/api/admin/categories/delete',{
+      axios.post('http://localhost:1500/api/admin/categories/delete', {
         id : checkBoxValue
       })
       .then( (success) => {
@@ -71,13 +72,13 @@ export default function ViewCategory() {
   //for change-status the selected category
   const changeStatus = () => {
       axios.post('http://localhost:1500/api/admin/categories/change-status',{
-        id : checkBoxValue
+        id : checkBoxValue,
       })
       .then( (success) => {
-        if(success.data.status == true){
+        if(success.data.status === true){
           setStatus(!status);
           setCheckBoxValue([]);
-          toast.success(success.data.message);
+          toast.success(success.data.message);  
         } else {
           toast.error(success.data.message);
         }
@@ -89,7 +90,7 @@ export default function ViewCategory() {
   useEffect( () => {
       axios.post('http://localhost:1500/api/admin/categories',{
         page : currentPage,
-        limit : 20,
+        limit : 2,
       })
       .then( (success) => {
         if(success.data.status == true){
@@ -133,7 +134,7 @@ export default function ViewCategory() {
               <div className="relative overflow-x-auto">
                   <table className="w-full  text-left rtl:text-right text-gray-500 ">
                       <thead className="text-sm text-gray-700 uppercase bg-gray-50 ">
-                          <tr>
+                          <tr> 
                               <th scope="col" className="px-6 py-3"  width="100px">
                                 <input name='deleteCheck' id="purple-checkbox" type="checkbox" value="" className="w-4 h-4 text-purple-600 bg-gray-100 border-gray-300 rounded focus:ring-purple-500 " onChange={ selectAllHandler }
                                   checked = { (checkBoxValue.length == categories.length ) ? 'true' : ''  }

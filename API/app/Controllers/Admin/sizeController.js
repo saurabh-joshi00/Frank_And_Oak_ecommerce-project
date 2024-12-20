@@ -219,19 +219,21 @@ exports.changeStatus = async (request, response) => {
                 $in : request.body.id
             }
         },
-        { 
-            $set: {
-                status: { 
-                    $switch: {
-                        branches: [
-                            { case: { $eq: [ "$status", 0 ] }, then: 1 },
-                            { case: { $eq: [ "$status", 1 ] }, then: 0 },
-                        ],
-                        default: 1
+        [
+            { 
+                $set: {
+                    status: { 
+                        $switch: {
+                            branches: [
+                                { case: { $eq: [ "$status", 0 ] }, then: 1 },
+                                { case: { $eq: [ "$status", 1 ] }, then: 0 },
+                            ],
+                            default: 1
+                        } 
                     } 
                 } 
-            } 
-        }
+            }
+        ]
     ).then((result) => {
 
         var resp = {

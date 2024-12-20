@@ -3,10 +3,18 @@ const categoryModel = require("../../Models/Category.js");
 // Insert/Add API
 exports.create = async (request, response) => {
 
-    const data = new categoryModel({
+    var formData = {
         name : request.body.name,
         order : request.body.order ? request.body.order : 0,
-    })
+        root_Id : request.body.parent_Id,
+        featured_Categories : request.body.featured_Categories,
+    };
+
+    if(request.file.filename != undefined){
+        formData.image = request.file.filename;
+    }
+
+    const data = new categoryModel(formData)
 
     await data.save()
     .then((result) => {
@@ -55,7 +63,7 @@ exports.index = async (request, response) => {
    
    var defaultCondition = {
     deleted_At : null, 
-    root_Id : 0,
+    root_Id : { $ne : 0 },
    }
 
    if(request.body.status == undefined){
@@ -65,7 +73,7 @@ exports.index = async (request, response) => {
 
    await categoryModel
     .find(defaultCondition)  
-    .select('name status order')
+    .select('name image root_Id featured_Categories status order')
     .limit(limit).skip(skip)
     .sort({ _id : 'desc' })
     .then((result) => {
@@ -73,6 +81,7 @@ exports.index = async (request, response) => {
         if(result.length > 0){
             const resp = {
                 status : true,
+                base_Url : `${request.protocol}://${request.get('host')}/uploads/categories/`,
                 message : 'Record Found Successfully',
                 data : result,
             }
@@ -137,16 +146,24 @@ exports.details = async (request, response) => {
 
 // Update API
 exports.update = async (request, response) => {
+
+    var formData = {
+        name : request.body.name,
+        order : request.body.order,
+        root_Id : request.body.parent_Id,
+        featured_Categories : request.body.featured_Categories,
+    }
+
+    if(request.file != undefined){
+        formData.image = request.file.filename;
+    }
     
     await categoryModel.updateOne(
         {
             _id : request.params.id
         },
         {
-            $set : {
-                name : request.body.name,
-                order : request.body.order
-            }
+            $set : formData
         }
     ).then((result) => {
 
@@ -229,7 +246,7 @@ exports.changeStatus = async (request, response) => {
         {
             _id : {
                 $in : request.body.id
-            },
+            }
         },
         [
             { 
@@ -261,6 +278,7 @@ exports.changeStatus = async (request, response) => {
 
         //for-in loop is used to get the number of the index
         for(var value in error.errors){
+            console.log(value);
             errormessages.push(error.errors[value].message);
         }
 

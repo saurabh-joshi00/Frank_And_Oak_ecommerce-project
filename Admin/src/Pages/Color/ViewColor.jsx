@@ -19,7 +19,7 @@ export default function ViewColor() {
       const singleSelectHandler = (id) => {
         if(checkBoxValue.includes(id)){
           const data = checkBoxValue.filter((v, i) => {
-            if(v != id){
+            if(v !== id){
               return v;
             }
           })
@@ -73,10 +73,10 @@ export default function ViewColor() {
       //for change-status the selected category
       const changeStatus = () => {
         axios.post('http://localhost:1500/api/admin/colors/change-status',{
-          id : checkBoxValue
+          id : checkBoxValue,
         })
         .then( (success) => {
-          if(success.data.status == true){
+          if(success.data.status === true){
             setStatus(!status);
             setCheckBoxValue([]);
             toast.success(success.data.message);
@@ -91,7 +91,7 @@ export default function ViewColor() {
     useEffect( () => {
         axios.post('http://localhost:1500/api/admin/colors',{
           page : currentPage,
-          limit : 20
+          limit : 2
         })
         .then( (success) => {
           if(success.data.status == true){

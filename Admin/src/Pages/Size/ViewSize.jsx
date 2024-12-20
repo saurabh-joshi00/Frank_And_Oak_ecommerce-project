@@ -19,7 +19,7 @@ export default function ViewSize() {
     const singleSelectHandler = (id) => {
     if(checkBoxValue.includes(id)){
         const data = checkBoxValue.filter((v, i) => {
-        if(v != id){
+        if(v !== id){
             return v;
         }
         })
@@ -73,10 +73,10 @@ export default function ViewSize() {
     //for change-status the selected category
     const changeStatus = () => {
         axios.post('http://localhost:1500/api/admin/sizes/change-status',{
-          id : checkBoxValue
+          id : checkBoxValue,
         })
         .then( (success) => {
-          if(success.data.status == true){
+          if(success.data.status === true){
             setStatus(!status);
             setCheckBoxValue([]);
             toast.success(success.data.message);
