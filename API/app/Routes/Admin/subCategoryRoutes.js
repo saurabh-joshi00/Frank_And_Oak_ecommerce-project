@@ -23,11 +23,13 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage }).none();
 const single = multer({ storage: storage }).single('image');
 
-module.exports = server =>  { 
+module.exports = server =>  {  
 
     router.post('/add', single, create);
 
     router.post('/', folder.none(), index);
+    
+    // router.post('/v1', folder.none(), index);
 
     router.post('/details/:id', upload, details);
 

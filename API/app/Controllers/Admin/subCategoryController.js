@@ -74,7 +74,12 @@ exports.index = async (request, response) => {
    await categoryModel
     .find(defaultCondition)  
     .select('name image root_Id featured_Categories status order')
-    .limit(limit).skip(skip)
+    // .populate('root_Id')
+    .populate({
+        path : 'root_Id',
+        select : 'name'
+    })
+    .limit(limit).skip(skip) 
     .sort({ _id : 'desc' })
     .then((result) => {
 

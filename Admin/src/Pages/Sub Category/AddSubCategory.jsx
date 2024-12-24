@@ -167,7 +167,7 @@ export default function AddSubCategory() {
                       <option value="No" selected = { 
                               (subCategoryDetails.featured_Categories == 'No')
                               ?
-                              'selected'
+                               'selected'
                               :
                               '' 
                             } 

@@ -15,7 +15,7 @@ server.use(cors());
 
 //default url for the server
 server.get('/', (request, response) => {
-    response.send('Server is started...');
+    response.send('Server is started...'); 
 });
 
 //default static code for image uploading

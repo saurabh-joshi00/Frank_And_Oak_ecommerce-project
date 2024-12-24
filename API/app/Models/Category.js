@@ -12,7 +12,8 @@ const categorySchema = new mongoose.Schema({
     },
     root_Id : {
         type : String,
-        default : 0 
+        ref : 'Category',
+        default : 0  
     },
     featured_Categories : {
         type : String,
@@ -42,6 +43,6 @@ const categorySchema = new mongoose.Schema({
 });
 
 //Model declaration by declaring collection-name and schema
-const categoryModel = mongoose.model('category', categorySchema);
+const categoryModel = mongoose.model('Category', categorySchema);
 
 module.exports = categoryModel;
