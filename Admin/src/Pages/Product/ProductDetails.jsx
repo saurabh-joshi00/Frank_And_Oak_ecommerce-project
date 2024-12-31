@@ -11,7 +11,7 @@ export default function ProductDetails() {
           slash={"/"}
         />
         <div className="w-full min-h-[610px]">
-          <div className="max-w-[1220px] mx-auto py-5">
+          <div className="max-w-[1020px] mx-auto py-5">
             <h3 className="text-[26px] font-semibold bg-slate-100 py-3 px-4 rounded-t-md border border-slate-400">
               Product Details
             </h3>

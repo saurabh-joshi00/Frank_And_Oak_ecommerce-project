@@ -7,7 +7,7 @@ export default function ProductItems() {
     <section className="w-full">
       {/* Order Modal Start */}
       <div
-        id="order-modal"
+        id="order-modal" 
         className={`${
           orderModal === true ? `block` : `hidden`
         }  block overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full`}
@@ -129,7 +129,7 @@ export default function ProductItems() {
       
           <Breadcrumb path={"Product"} path2={"Product Items"} slash={"/"} />
           <div className="w-full min-h-[610px]">
-            <div className="max-w-[1220px] mx-auto py-5">
+            <div className="max-w-[1020px] mx-auto py-5">
               <h3 className="text-[26px] font-semibold bg-slate-100 py-3 px-4 rounded-t-md border border-slate-400">
                 Product Items
               </h3>

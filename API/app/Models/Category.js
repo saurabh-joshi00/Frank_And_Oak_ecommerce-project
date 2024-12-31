@@ -8,7 +8,7 @@ const categorySchema = new mongoose.Schema({
         match: /^[a-z '&A-Z]{2,20}$/,
     },
     image : {
-        type : String,
+        type : String, 
     },
     root_Id : {
         type : String,

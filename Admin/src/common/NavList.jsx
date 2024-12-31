@@ -1,7 +1,7 @@
 export let navList = [
   {
     id: 1,
-    navName: "Colors",
+    navName: "Color", 
     icon: (
       <svg
         fill="currentColor"

@@ -41,6 +41,6 @@ const colorSchema = new mongoose.Schema({
 });
 
 //Model declaration by declaring collection-name and schema
-const colorModel = mongoose.model('color', colorSchema);
+const colorModel = mongoose.model('Color', colorSchema);
 
 module.exports = colorModel;

@@ -1,23 +1,42 @@
-const categoryModel = require("../../Models/Category.js");
+const productModel = require("../../Models/Product.js");
+const productImageModel = require("../../Models/productImages.js");
 
 // Insert/Add API
 exports.create = async (request, response) => {
 
-    var formData = {
-        name : request.body.name,
-        order : request.body.order ? request.body.order : 0,
-        root_Id : request.body.parent_Id,
-        featured_Categories : request.body.featured_Categories,
-    }; 
+    var requestData = request.body;
 
-    if(request.file.filename != undefined){
-        formData.image = request.file.filename;
+    //for single image
+    if(request.files[0]){
+        if(request.files[0].filename){
+            requestData.image = request.files[0].filename
+        }
     }
+    //for multiple images
+    // if(request.files.images){
+    //     var images = [];
+    //     request.files.images.forEach(function(item){
+    //         images.push(item.filename);
+    //     });
+    //     requestData.images = images;
+    // }
 
-    const data = new categoryModel(formData)
+    const data = new productModel(requestData)
 
     await data.save()
     .then((result) => {
+
+        //Insert-query for saving the product images
+        // if(request.files){
+        //     request.files.forEach((item) => {
+        //         const images = new productImageModel({
+        //             product_Id : result._id,
+        //             image : item.filename
+        //         });
+        //     })
+        // }
+
+
         const resp = {
             status : true,
             message : 'Record Added Successfully',
@@ -47,46 +66,73 @@ exports.create = async (request, response) => {
 // View API
 exports.index = async (request, response) => {
 
-    if(request.body.limit == undefined){
-         var limit = 20;
-    } else{
-        var limit = request.body.limit;
-    }
+    var page = (request.body.page == undefined || request.body.page < 1) ? 1 : request.body.page;
 
-    if(request.body.page == undefined || request.body.page < 1){
-        var page = 1;
-   } else{
-       var page = request.body.page;
-   }
+    var limit = (request.body.limit == undefined) ? 20 : request.body.limit;
 
-   var skip = (page - 1) * limit;  
+    var skip = (page - 1) * limit;
+ 
    
    var defaultCondition = {
-    deleted_At : null, 
-    root_Id : { $ne : 0 },
-   }
+        deleted_At : null,
+   };
 
-   if(request.body.status == undefined){
+   //letter-searching filter condition for name field
+   if(request.body.name == undefined){
+    } else{
+        defaultCondition.name = new RegExp(request.body.name, 'i');
+    }
+
+    //filter condition by category-id
+    if(request.body.category_Id == undefined){
+    } else{
+        defaultCondition.category_Id = request.body.category_Id;
+    }
+
+    //filter condition by sub-category-id
+    if(request.body.sub_Category_Id == undefined){
+    } else{
+        defaultCondition.sub_Category_Id = request.body.sub_Category_Id;
+    }
+
+    //filter condition by color-id
+    if(request.body.color_Id == undefined){
+    } else{
+        defaultCondition.color_Id = request.body.color_Id;
+    }
+
+    //filter condition by size-id
+    if(request.body.size_Id == undefined){
+    } else{
+        defaultCondition.size_Id = request.body.size_Id;
+    }
+
+    //filter condition by status
+    if(request.body.status == undefined){
     } else{
         defaultCondition.status = request.body.status;
     }
 
-   await categoryModel
+    //filter conditon by actual-price
+    if(request.body.actual_Price == undefined){
+    } else{
+        defaultCondition.actual_Price = request.body.actual_Price;
+    }
+
+   await productModel
     .find(defaultCondition)  
-    .select('name image root_Id featured_Categories status order')
-    // .populate('root_Id')
-    .populate({
-        path : 'root_Id',
-        select : 'name'
-    })
-    .limit(limit).skip(skip) 
-    .sort({ _id : 'desc' })
+    .select('name category_Id sub_Category_Id color_Id size_Id actual_Price sale_Price status order')
+    .populate('category_Id', 'name')
+    .populate('sub_Category_Id', 'name')
+    .populate('color_Id', 'name')
+    .populate('size_Id', 'name')
+    .limit(limit).skip(skip)
+    .sort({ _id : 'desc' }) 
     .then((result) => {
 
         if(result.length > 0){
             const resp = {
                 status : true,
-                base_Url : `${request.protocol}://${request.get('host')}/uploads/categories/`,
                 message : 'Record Found Successfully',
                 data : result,
             }
@@ -116,7 +162,7 @@ exports.index = async (request, response) => {
 // Details API
 exports.details = async (request, response) => {
 
-   await categoryModel
+   await productModel
     .findOne({ deleted_At : null, _id : request.params.id })
     .then((result) => {
 
@@ -152,23 +198,18 @@ exports.details = async (request, response) => {
 // Update API
 exports.update = async (request, response) => {
 
-    var formData = {
-        name : request.body.name,
-        order : request.body.order,
-        root_Id : request.body.parent_Id,
-        featured_Categories : request.body.featured_Categories,
-    }
+    var requestData = request.body;
 
-    if(request.file != undefined){
-        formData.image = request.file.filename;
+    if(request.files.image){
+        requestData.image = request.files.image[0].filename;
     }
     
-    await categoryModel.updateOne(
+    await productModel.updateOne(
         {
             _id : request.params.id
         },
         {
-            $set : formData
+            $set : requestData
         }
     ).then((result) => {
 
@@ -203,7 +244,7 @@ exports.update = async (request, response) => {
 // Soft-Delete API through updateMany() for multiple delete
 exports.destroy = async (request, response) => {
 
-    await categoryModel.updateMany(
+    await productModel.updateMany(
         {
             _id : {
                 $in : request.body.id
@@ -229,7 +270,6 @@ exports.destroy = async (request, response) => {
 
         //for-in loop is used to get the number of the index
         for(var value in error.errors){
-            console.log(value);
             errormessages.push(error.errors[value].message);
         }
 
@@ -247,11 +287,11 @@ exports.destroy = async (request, response) => {
 // Change-Status API through updateMany() for multiple change
 exports.changeStatus = async (request, response) => {
 
-    await categoryModel.updateMany(
+    await productModel.updateMany(
         {
             _id : {
                 $in : request.body.id
-            }
+            },
         },
         [
             { 
@@ -283,7 +323,6 @@ exports.changeStatus = async (request, response) => {
 
         //for-in loop is used to get the number of the index
         for(var value in error.errors){
-            console.log(value);
             errormessages.push(error.errors[value].message);
         }
 

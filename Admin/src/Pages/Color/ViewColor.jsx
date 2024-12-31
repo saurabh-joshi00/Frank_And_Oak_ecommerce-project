@@ -107,7 +107,7 @@ export default function ViewColor() {
 
   return (
     <>
-    <Breadcrumb path={"Colors"} path2={"View Color"} slash={"/"} />
+    <Breadcrumb path={"Color"} path2={"View Color"} slash={"/"} />
         <div className="w-full min-h-[610px]">
 
         <div className="max-w-[1020px] mx-auto ms-[73%]">

@@ -41,6 +41,6 @@ const sizeSchema = new mongoose.Schema({
 });
 
 //Model declaration by declaring collection-name and schema
-const sizeModel = mongoose.model('size', sizeSchema);
+const sizeModel = mongoose.model('Size', sizeSchema);
 
 module.exports = sizeModel;

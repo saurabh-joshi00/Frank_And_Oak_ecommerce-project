@@ -84,7 +84,7 @@ export default function AddColor() {
   return (
     <>
     <Breadcrumb 
-    path={"Colors"} 
+    path={"Color"} 
     path2={ (params.id != null) ? 'Update Color' : "Add Color"} 
     slash={"/"} 
     />
